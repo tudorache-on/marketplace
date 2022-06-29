@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ebs.marketplace.mappers.ProductMapper">
+
+    <resultMap id="ResultMap" type="com.ebs.marketplace.model.Product">
+        <id column="id" property="id" />
+        <result column="title" property="title" />
+        <result column="description" property="description" />
+        <result column="price" property="price" />
+        <result column="user_username" property="userUsername" />
+        <result column="likes_counter" property="likesCounter" />
+        <result column="dislikes_counter" property="dislikesCounter" />
+    </resultMap>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO products VALUES(#{title}, #{description}, #{price}, #{userUsername}, #{likesCounter}, #{dislikesCounter});
+    </insert>
+
+    <update id="update">
+        UPDATE products SET title = #{title}, description = #{description}, price = #{price} WHERE id = #{id};
+    </update>
+
+    <select id="findByUserUsername" resultMap="ResultMap">
+        SELECT * FROM products WHERE user_username = #{username};
+    </select>
+
+    <select id="findById" resultMap="ResultMap">
+        SELECT * FROM products WHERE id = #{id};
+    </select>
+
+    <select id="findAll" resultMap="ResultMap">
+        SELECT * FROM products;
+    </select>
+
+    <delete id="deleteById">
+        DELETE FROM products WHERE id = #{id};
+    </delete>
+
+</mapper>

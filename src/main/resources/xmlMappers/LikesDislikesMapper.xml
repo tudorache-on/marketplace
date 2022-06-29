@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ebs.marketplace.mappers.LikesDislikesMapper">
+
+    <resultMap id="ResultMap" type="com.ebs.marketplace.model.LikesDislikes">
+        <id column="user_id" property="userId" />
+        <result column="product_id" property="productId" />
+        <result column="like_dislike" property="likeDislike" />
+    </resultMap>
+
+    <insert id="insert">
+        INSERT INTO likes_dislikes VALUES (#{userId}, #{productId}, #{likeDislike});
+    </insert>
+
+    <update id="update">
+        UPDATE likes_dislikes SET like_dislike = #{likeDislike} WHERE user_id = #{userId} AND product_id = #{productId};
+    </update>
+
+    <delete id="deleteByUserIdAndProductId">
+        DELETE FROM likes_dislikes WHERE user_id = #{user_id} AND product_id = #{product_id};
+    </delete>
+
+    <select id="countByProductIdAndLikesDislikes" resultType="long">
+        SELECT COUNT (product_id) FROM likes_dislikes WHERE product_id = #{product_id} AND like_dislike = #{like_dislike};
+    </select>
+
+    <select id="findByUserIdAndProductId" resultMap="ResultMap">
+        SELECT * FROM likes_dislikes WHERE user_id = #{user_id} AND product_id = #{product_id}
+    </select>
+
+</mapper>
