@@ -10,11 +10,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LikesDislikes {
-
     private long userId;
-
     private long productId;
-
     private String likeDislike;
-
 }

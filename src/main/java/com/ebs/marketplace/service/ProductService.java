@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 
-
 @Service
 public class ProductService {
 
@@ -29,7 +28,7 @@ public class ProductService {
     @Autowired
     private LikesDislikesMapper likesDislikesMapper;
 
-    public Product createProduct (ProductDto productData) {
+    public Product createProduct(ProductDto productData) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUsername = authentication.getName();
 
@@ -43,19 +42,18 @@ public class ProductService {
         return product;
     }
 
-    public List<Product> getProducts () {
+    public List<Product> getProducts() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUsername = authentication.getName();
         return productMapper.findByUserUsername(currentUsername);
     }
 
-    public void deleteProduct (Long id) {
+    public void deleteProduct(Long id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUsername = authentication.getName();
 
         Product product = productMapper.findById(id);
-        if (product.getUserUsername().equals(currentUsername))
-            productMapper.deleteById(id);
+        if (product.getUserUsername().equals(currentUsername)) productMapper.deleteById(id);
     }
 
     public Product updateProduct(Long prod_id, ProductDto productDetails) {
@@ -81,7 +79,7 @@ public class ProductService {
         return productMapper.findAll(rowBounds);
     }
 
-    public void likeDislikeManager(long id,  String likeDislike) {
+    public void likeDislikeManager(long id, String likeDislike) {
         Product product = productMapper.findById(id);
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

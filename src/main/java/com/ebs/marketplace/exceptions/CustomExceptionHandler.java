@@ -1,8 +1,5 @@
 package com.ebs.marketplace.exceptions;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,10 +11,13 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @ControllerAdvice
-public class CustomExceptionHandler extends ResponseEntityExceptionHandler
-{
+public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(Exception.class)
     public final ResponseEntity<Object> handleAllExceptions(Exception ex, WebRequest request) {
         List<String> details = new ArrayList<>();
@@ -30,7 +30,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler
     public final ResponseEntity handleAccessDeniedException(Exception ex, WebRequest request) {
         List<String> details = new ArrayList<>();
         details.add(ex.getLocalizedMessage());
-        ErrorResponse error = new ErrorResponse( ex.getMessage(), details);
+        ErrorResponse error = new ErrorResponse(ex.getMessage(), details);
         return new ResponseEntity(error, HttpStatus.FORBIDDEN);
     }
 
@@ -38,7 +38,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler
     public final ResponseEntity handleConstraintViolationException(ConstraintViolationException ex, WebRequest request) {
         Set<ConstraintViolation<?>> violations = ex.getConstraintViolations();
         List<String> details = violations.stream().map(ConstraintViolation::getMessage).collect(Collectors.toList());
-        ErrorResponse error = new ErrorResponse( "Datele introduse nu corespund cerintelor!", details);
+        ErrorResponse error = new ErrorResponse("Datele introduse nu corespund cerintelor!", details);
         return new ResponseEntity(error, HttpStatus.BAD_REQUEST);
     }
 
@@ -51,7 +51,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler
     public final ResponseEntity handleDataIntegrityViolationException(DataIntegrityViolationException ex, WebRequest request) {
         List<String> details = new ArrayList<>();
         details.add(ex.getMostSpecificCause().getMessage());
-        ErrorResponse error = new ErrorResponse( "Valorile introduse nu corespund cerintelor!", details);
+        ErrorResponse error = new ErrorResponse("Valorile introduse nu corespund cerintelor!", details);
         return new ResponseEntity(error, HttpStatus.BAD_REQUEST);
     }
 }

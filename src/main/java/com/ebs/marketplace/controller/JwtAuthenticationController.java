@@ -1,9 +1,12 @@
 package com.ebs.marketplace.controller;
 
+import com.ebs.marketplace.jwt.JwtTokenUtil;
 import com.ebs.marketplace.mappers.UserMapper;
+import com.ebs.marketplace.model.JwtRequestLogIn;
 import com.ebs.marketplace.model.JwtRequestSignUp;
+import com.ebs.marketplace.model.JwtResponse;
 import com.ebs.marketplace.model.User;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.ebs.marketplace.service.JwtUserDetailsService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -12,11 +15,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import com.ebs.marketplace.service.JwtUserDetailsService;
-
-import com.ebs.marketplace.jwt.JwtTokenUtil;
-import com.ebs.marketplace.model.JwtRequestLogIn;
-import com.ebs.marketplace.model.JwtResponse;
 
 import javax.validation.Valid;
 
