@@ -25,14 +25,19 @@ import javax.validation.Valid;
 @RequestMapping("/api/auth")
 public class JwtAuthenticationController {
 
+    @Autowired
     private AuthenticationManager authenticationManager;
 
+    @Autowired
     private JwtTokenUtil jwtTokenUtil;
 
+    @Autowired
     private JwtUserDetailsService userDetailsService;
 
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
     private UserMapper userMapper;
 
     @PostMapping("/signin")
