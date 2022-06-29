@@ -1,8 +1,8 @@
 package com.ebs.marketplace.service;
 
-import com.ebs.marketplace.mappers.LikesDislikesMapper;
-import com.ebs.marketplace.mappers.ProductMapper;
-import com.ebs.marketplace.mappers.UserMapper;
+import com.ebs.marketplace.mapper.LikesDislikesMapper;
+import com.ebs.marketplace.mapper.ProductMapper;
+import com.ebs.marketplace.mapper.UserMapper;
 import com.ebs.marketplace.model.LikesDislikes;
 import com.ebs.marketplace.model.Product;
 import com.ebs.marketplace.model.User;
@@ -15,18 +15,19 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-
 @Service
 public class ProductService {
 
-    @Autowired
-    private UserMapper userMapper;
+    private final UserMapper userMapper;
+    private final ProductMapper productMapper;
+    private final LikesDislikesMapper likesDislikesMapper;
 
     @Autowired
-    private ProductMapper productMapper;
-
-    @Autowired
-    private LikesDislikesMapper likesDislikesMapper;
+    public ProductService(UserMapper userMapper, ProductMapper productMapper, LikesDislikesMapper likesDislikesMapper) {
+        this.userMapper = userMapper;
+        this.productMapper = productMapper;
+        this.likesDislikesMapper = likesDislikesMapper;
+    }
 
     public Product createProduct(ProductDto productData) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -53,11 +54,13 @@ public class ProductService {
         String currentUsername = authentication.getName();
 
         Product product = productMapper.findById(id);
+        if (product == null) throw new IllegalArgumentException("Object does not exist!");
         if (product.getUserUsername().equals(currentUsername)) productMapper.deleteById(id);
     }
 
     public Product updateProduct(Long prod_id, ProductDto productDetails) {
         Product product = productMapper.findById(prod_id);
+        if (product == null) throw new IllegalArgumentException("Object does not exist!");
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUsername = authentication.getName();
@@ -82,7 +85,7 @@ public class ProductService {
     public void likeDislikeManager(long id, String likeDislike) {
         Product product = productMapper.findById(id);
 
-        if (product == null) throw new IllegalArgumentException("Elementul cu id-ul date este null!");
+        if (product == null) throw new IllegalArgumentException("Object does not exist!");
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUsername = authentication.getName();

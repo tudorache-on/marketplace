@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import javax.validation.ConstraintViolation;
@@ -19,39 +18,39 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(Exception.class)
-    public final ResponseEntity<Object> handleAllExceptions(Exception ex, WebRequest request) {
+    public final ResponseEntity<Object> handleAllExceptions(Exception ex) {
         List<String> details = new ArrayList<>();
         details.add(ex.getLocalizedMessage());
         ErrorResponse error = new ErrorResponse("Server Error", details);
-        return new ResponseEntity(error, HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    public final ResponseEntity handleAccessDeniedException(Exception ex, WebRequest request) {
+    public final ResponseEntity<Object> handleAccessDeniedException(Exception ex) {
         List<String> details = new ArrayList<>();
         details.add(ex.getLocalizedMessage());
         ErrorResponse error = new ErrorResponse(ex.getMessage(), details);
-        return new ResponseEntity(error, HttpStatus.FORBIDDEN);
+        return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public final ResponseEntity handleConstraintViolationException(ConstraintViolationException ex, WebRequest request) {
+    public final ResponseEntity<Object> handleConstraintViolationException(ConstraintViolationException ex) {
         Set<ConstraintViolation<?>> violations = ex.getConstraintViolations();
         List<String> details = violations.stream().map(ConstraintViolation::getMessage).collect(Collectors.toList());
         ErrorResponse error = new ErrorResponse("Datele introduse nu corespund cerintelor!", details);
-        return new ResponseEntity(error, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public final ResponseEntity handleIllegalArgumentException(Exception ex, WebRequest request) {
-        return new ResponseEntity(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    public final ResponseEntity<Object> handleIllegalArgumentException(Exception ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public final ResponseEntity handleDataIntegrityViolationException(DataIntegrityViolationException ex, WebRequest request) {
+    public final ResponseEntity<Object> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
         List<String> details = new ArrayList<>();
         details.add(ex.getMostSpecificCause().getMessage());
         ErrorResponse error = new ErrorResponse("Valorile introduse nu corespund cerintelor!", details);
-        return new ResponseEntity(error, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 }

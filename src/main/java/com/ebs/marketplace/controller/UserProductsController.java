@@ -13,8 +13,12 @@ import java.util.List;
 @SecurityRequirement(name = "Authentication")
 @RequestMapping("/api/user")
 public class UserProductsController {
+    private final ProductService productService;
+
     @Autowired
-    private ProductService productService;
+    public UserProductsController(ProductService productService) {
+        this.productService = productService;
+    }
 
     @RequestMapping(value = "/products", method = RequestMethod.POST)
     public Product createProduct(@RequestBody ProductDto productData) {

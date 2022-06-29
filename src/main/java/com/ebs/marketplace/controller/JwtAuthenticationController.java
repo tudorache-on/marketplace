@@ -1,7 +1,7 @@
 package com.ebs.marketplace.controller;
 
 import com.ebs.marketplace.jwt.JwtTokenUtil;
-import com.ebs.marketplace.mappers.UserMapper;
+import com.ebs.marketplace.mapper.UserMapper;
 import com.ebs.marketplace.model.JwtRequestLogIn;
 import com.ebs.marketplace.model.JwtRequestSignUp;
 import com.ebs.marketplace.model.JwtResponse;
@@ -24,20 +24,20 @@ import javax.validation.Valid;
 @RequestMapping("/api/auth")
 public class JwtAuthenticationController {
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
+    private final JwtTokenUtil jwtTokenUtil;
+    private final JwtUserDetailsService userDetailsService;
+    private final PasswordEncoder passwordEncoder;
+    private final UserMapper userMapper;
 
     @Autowired
-    private JwtTokenUtil jwtTokenUtil;
-
-    @Autowired
-    private JwtUserDetailsService userDetailsService;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private UserMapper userMapper;
+    public JwtAuthenticationController(AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil, JwtUserDetailsService userDetailsService, PasswordEncoder passwordEncoder, UserMapper userMapper) {
+        this.authenticationManager = authenticationManager;
+        this.jwtTokenUtil = jwtTokenUtil;
+        this.userDetailsService = userDetailsService;
+        this.passwordEncoder = passwordEncoder;
+        this.userMapper = userMapper;
+    }
 
     @PostMapping("/signin")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequestLogIn jwtRequest) throws Exception {
@@ -57,7 +57,7 @@ public class JwtAuthenticationController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> createNewUser(@Valid @RequestBody JwtRequestSignUp jwtRequest) throws Exception {
+    public ResponseEntity<?> createNewUser(@Valid @RequestBody JwtRequestSignUp jwtRequest){
 
         if (userMapper.existsByEmail(jwtRequest.getEmail()) != 0) {
             return new ResponseEntity<>("Emailul dat este ocupat!", HttpStatus.BAD_REQUEST);

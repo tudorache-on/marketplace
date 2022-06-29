@@ -1,4 +1,4 @@
-package com.ebs.marketplace.mappers;
+package com.ebs.marketplace.mapper;
 
 import com.ebs.marketplace.model.User;
 import org.apache.ibatis.annotations.Mapper;
