@@ -9,8 +9,8 @@
         <result column="password" property="password" />
     </resultMap>
 
-    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO users VALUES (#{email}, #{password}, #{username});
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        INSERT INTO users(email, password, username) VALUES (#{email}, #{password}, #{username});
     </insert>
 
     <select id="findByUsernameOrEmail" resultMap="ResultMap">

@@ -12,8 +12,9 @@
         <result column="dislikes_counter" property="dislikesCounter" />
     </resultMap>
 
-    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO products VALUES(#{title}, #{description}, #{price}, #{userUsername}, #{likesCounter}, #{dislikesCounter});
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        INSERT INTO products (title, description, price, user_username, likes_counter, dislikes_counter)
+        VALUES(#{title}, #{description}, #{price}, #{userUsername}, #{likesCounter}, #{dislikesCounter});
     </insert>
 
     <update id="update">

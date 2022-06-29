@@ -82,6 +82,8 @@ public class ProductService {
     public void likeDislikeManager(long id, String likeDislike) {
         Product product = productMapper.findById(id);
 
+        if (product == null) throw new IllegalArgumentException("Elementul cu id-ul date este null!");
+
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUsername = authentication.getName();
         User user = userMapper.findByUsername(currentUsername);

@@ -7,6 +7,7 @@ import com.ebs.marketplace.model.JwtRequestSignUp;
 import com.ebs.marketplace.model.JwtResponse;
 import com.ebs.marketplace.model.User;
 import com.ebs.marketplace.service.JwtUserDetailsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,14 +24,19 @@ import javax.validation.Valid;
 @RequestMapping("/api/auth")
 public class JwtAuthenticationController {
 
+    @Autowired
     private AuthenticationManager authenticationManager;
 
+    @Autowired
     private JwtTokenUtil jwtTokenUtil;
 
+    @Autowired
     private JwtUserDetailsService userDetailsService;
 
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
     private UserMapper userMapper;
 
     @PostMapping("/signin")
