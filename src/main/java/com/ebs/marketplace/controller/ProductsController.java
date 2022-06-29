@@ -2,6 +2,7 @@ package com.ebs.marketplace.controller;
 
 import com.ebs.marketplace.model.Product;
 import com.ebs.marketplace.service.ProductService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,20 +13,20 @@ import java.util.List;
 public class ProductsController {
 
     @Autowired
-    ProductService productService;
+    private ProductService productService;
 
-    @RequestMapping(value = "/products", method= RequestMethod.GET)
+    @GetMapping("/products")
     public List<Product> getProducts(
-            @RequestParam(defaultValue = "0", required = false) int pageNr
-    ){
-        return productService.getAllPosts(pageNr);
+            @RequestParam(defaultValue = "1", required = false) int pageNr,
+            @RequestParam(defaultValue = "3", required = false) int pageSize) {
+        return productService.getAllPosts(pageNr, pageSize);
     }
 
-    @RequestMapping(value = "/product/{product_id}", method= RequestMethod.GET)
-    public Product likes(
-            @PathVariable (value = "product_id") Long id,
-            @RequestParam(required = false) Boolean like
-    ){
-        return productService.likeManager(id, like);
+    @SecurityRequirement(name = "Authentication")
+    @PatchMapping("/products/{product_id}/{like}")
+    public void likes(
+            @PathVariable(value = "product_id") Long id,
+            @PathVariable(value = "like") String like) {
+        productService.likeDislikeManager(id, like);
     }
 }

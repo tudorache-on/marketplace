@@ -1,115 +1,111 @@
 package com.ebs.marketplace.service;
 
+import com.ebs.marketplace.mappers.LikesDislikesMapper;
+import com.ebs.marketplace.mappers.ProductMapper;
+import com.ebs.marketplace.mappers.UserMapper;
+import com.ebs.marketplace.model.LikesDislikes;
+import com.ebs.marketplace.model.Product;
+import com.ebs.marketplace.model.User;
 import com.ebs.marketplace.payload.ProductDto;
+import org.apache.ibatis.session.RowBounds;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import com.ebs.marketplace.model.Product;
-import com.ebs.marketplace.repository.ProductRepository;
-
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+
+
 
 @Service
 public class ProductService {
 
     @Autowired
-    ProductRepository productRepository;
+    private UserMapper userMapper;
 
-    //Create
+    @Autowired
+    private ProductMapper productMapper;
+
+    @Autowired
+    private LikesDislikesMapper likesDislikesMapper;
+
     public Product createProduct (ProductDto productData) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentUserEmail = authentication.getName();
+        String currentUsername = authentication.getName();
 
         Product product = new Product();
         product.setTitle(productData.getTitle());
         product.setDescription(productData.getDescription());
         product.setPrice(productData.getPrice());
-        product.setUserEmail(currentUserEmail);
+        product.setUserUsername(currentUsername);
+        productMapper.insert(product);
 
-        return productRepository.save(product);
+        return product;
     }
 
-    //Read
     public List<Product> getProducts () {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentUserEmail = authentication.getName();
-        return productRepository.findByUserEmail(currentUserEmail);
+        String currentUsername = authentication.getName();
+        return productMapper.findByUserUsername(currentUsername);
     }
 
-    //Delete
     public void deleteProduct (Long id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentUserEmail = authentication.getName();
+        String currentUsername = authentication.getName();
 
-        Product product = productRepository.findById(id).get();
-        if (product.getUserEmail().equals(currentUserEmail))
-            productRepository.deleteById(id);
+        Product product = productMapper.findById(id);
+        if (product.getUserUsername().equals(currentUsername))
+            productMapper.deleteById(id);
     }
 
-    // Update
-    public Product updateProduct(Long prod_id, Product productDetails) {
-        Product product = productRepository.findById(prod_id).get();
+    public Product updateProduct(Long prod_id, ProductDto productDetails) {
+        Product product = productMapper.findById(prod_id);
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentUserEmail = authentication.getName();
+        String currentUsername = authentication.getName();
 
-        if (product.getUserEmail().equals(currentUserEmail)) {
+        if (product.getUserUsername().equals(currentUsername)) {
             product.setTitle(productDetails.getTitle());
             product.setDescription(productDetails.getDescription());
             product.setPrice(productDetails.getPrice());
 
         }
-        return productRepository.save(product);
+        productMapper.update(product);
+        return product;
     }
 
-    // Get All Elements Of Page
-    public List<Product> getAllPosts(int pageNr) {
+    public List<Product> getAllPosts(int pageNr, int pageSize) {
 
-        Pageable pageable = PageRequest.of(pageNr, 3);
+        RowBounds rowBounds = new RowBounds((pageNr - 1) * pageSize, pageSize);
 
-        Page<Product> products = productRepository.findAll(pageable);
-
-        return products.getContent();
+        return productMapper.findAll(rowBounds);
     }
 
-    public Product likeManager(Long id, Boolean like) {
-        Product product = productRepository.findById(id).get();
+    public void likeDislikeManager(long id,  String likeDislike) {
+        Product product = productMapper.findById(id);
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentUserEmail = authentication.getName();
+        String currentUsername = authentication.getName();
+        User user = userMapper.findByUsername(currentUsername);
 
-        List<String> likesList;
+        if (!currentUsername.equals(product.getUserUsername())) {
+            if (likeDislike.equals("none")) likesDislikesMapper.deleteByUserIdAndProductId(user.getId(), id);
 
-        if (product.getLikes() != null)
-            likesList = new ArrayList<String>(Arrays.asList(product.getLikes().split(", ")));
-        else
-            likesList = new ArrayList<>();
+            else {
+                LikesDislikes productLikeDislike = likesDislikesMapper.findByUserIdAndProductId(user.getId(), id);
 
-        if (like != null && !currentUserEmail.equals(product.getUserEmail())) {
-
-            if (product.getLikes().contains(currentUserEmail) && !like) {
-                likesList.remove(currentUserEmail);
+                if (productLikeDislike == null)
+                    likesDislikesMapper.insert(new LikesDislikes(user.getId(), id, likeDislike));
+                else {
+                    productLikeDislike.setLikeDislike(likeDislike);
+                    likesDislikesMapper.update(productLikeDislike);
+                }
             }
 
-            if (!product.getLikes().contains(currentUserEmail) && like) {
-                likesList.add(currentUserEmail);
-            }
+            product.setLikesCounter(likesDislikesMapper.countByProductIdAndLikesDislikes(id, "like"));
+            product.setDislikesCounter(likesDislikesMapper.countByProductIdAndLikesDislikes(id, "dislike"));
+            productMapper.update(product);
         }
-        if (likesList.size() > 0)
-            if (likesList.get(0).equals(""))
-                likesList.remove(0);
-
-        product.setLikesCounter(likesList.size());
-        product.setLikes(String.join(", ", likesList));
-
-        return productRepository.save(product);
     }
 
 }
