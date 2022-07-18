@@ -26,11 +26,11 @@ public class JwtAuthenticationController {
 
     @PostMapping("/signin")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequestLogIn jwtRequest, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        return sessionUtil.signIn(jwtRequest, request, response);
+        return sessionUtil.signIn(jwtRequest);
     }
 
     @PostMapping("/signup")
     public ResponseEntity<?> createNewUser(@Valid @RequestBody JwtRequestSignUp jwtRequest, HttpServletRequest request, HttpServletResponse response){
-        return sessionUtil.signUp(jwtRequest, request, response);
+        return sessionUtil.signUp(jwtRequest);
     }
 }
