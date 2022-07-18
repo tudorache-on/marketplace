@@ -1,12 +1,11 @@
 package com.ebs.marketplace.jwt;
 
 import com.ebs.marketplace.service.JwtUserDetailsService;
-import com.ebs.marketplace.session.SessionRepository;
+import com.ebs.marketplace.session.TokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -21,12 +20,12 @@ import java.io.IOException;
 public class JwtRequestFilter extends OncePerRequestFilter {
 
     private final JwtUserDetailsService jwtUserDetailsService;
-    private final SessionRepository sessionRepository;
+    private final TokenRepository tokenRepository;
     private final JwtUtil jwtUtil;
     @Autowired
-    public JwtRequestFilter(JwtUserDetailsService jwtUserDetailsService, SessionRepository sessionRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
+    public JwtRequestFilter(JwtUserDetailsService jwtUserDetailsService, TokenRepository tokenRepository, JwtUtil jwtUtil) {
         this.jwtUserDetailsService = jwtUserDetailsService;
-        this.sessionRepository = sessionRepository;
+        this.tokenRepository = tokenRepository;
         this.jwtUtil = jwtUtil;
     }
 
@@ -49,16 +48,17 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 //        }
         String token = request.getHeader("Authentication"), username = null;
 
-        try {
+        System.out.println(token);
+
+        if (token != null) {
             username = jwtUtil.getUsernameFromToken(token);
-        } catch (IllegalArgumentException e) {
-            System.out.println("Unable to get JWT Token");
+        }
 
         if (SecurityContextHolder.getContext().getAuthentication() == null && username != null) {
 
             UserDetails userDetails = this.jwtUserDetailsService.loadUserByUsername(username);
 
-            if (sessionRepository.existsByKey("TOKEN", token)) {
+            if (tokenRepository.existsByKey("TOKEN", token)) {
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
                         new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

@@ -9,6 +9,9 @@ import com.ebs.marketplace.service.JwtUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -16,31 +19,27 @@ import org.springframework.stereotype.Component;
 @Component
 public class SessionUtil {
 
-    private final SessionRepository sessionRepository;
+    private final TokenRepository tokenRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final JwtUserDetailsService jwtUserDetailsService;
+    private final AuthenticationManager authenticationManager;
 
     @Autowired
-    public SessionUtil(SessionRepository sessionRepository, UserMapper userMapper, PasswordEncoder passwordEncoder, JwtUtil jwtUtil, JwtUserDetailsService jwtUserDetailsService) {
-        this.sessionRepository = sessionRepository;
+    public SessionUtil(TokenRepository tokenRepository, UserMapper userMapper, PasswordEncoder passwordEncoder, JwtUtil jwtUtil, JwtUserDetailsService jwtUserDetailsService, AuthenticationManager authenticationManager) {
+        this.tokenRepository = tokenRepository;
         this.userMapper = userMapper;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtil = jwtUtil;
         this.jwtUserDetailsService = jwtUserDetailsService;
+        this.authenticationManager = authenticationManager;
     }
 
     public ResponseEntity<?> signIn (JwtRequestLogIn jwtRequest){
-//        try {
-//            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken
-//                    (jwtRequest.getUsernameOrEmail(), jwtRequest.getPassword()));
-//        } catch (BadCredentialsException e) {
-//            throw new Exception("Numele sau prenumele este introdus gresit!", e);
-//        }
         UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(jwtRequest.getUsernameOrEmail());
         String token = jwtUtil.generateToken(userDetails);
-        sessionRepository.insert("TOKEN", token);
+        tokenRepository.insert("TOKEN", token);
 
         return ResponseEntity.ok(token);
     }
@@ -60,7 +59,7 @@ public class SessionUtil {
 
         UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(jwtRequest.getUsername());
         String token = jwtUtil.generateToken(userDetails);
-        sessionRepository.insert("TOKEN", token);
+        tokenRepository.insert("TOKEN", token);
 
         return ResponseEntity.ok(token);
     }

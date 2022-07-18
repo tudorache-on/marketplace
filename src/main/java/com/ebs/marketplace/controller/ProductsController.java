@@ -26,7 +26,7 @@ public class ProductsController {
         return productService.getAllPosts(pageNr, pageSize);
     }
 
-//    @SecurityRequirement(name = "Cookie")
+    @SecurityRequirement(name = "Authentication")
     @PatchMapping("/products/{product_id}/{like}")
     public void likes(
             @PathVariable(value = "product_id") Long id,
