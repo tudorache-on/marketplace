@@ -13,6 +13,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -42,10 +43,9 @@ public class SessionUtil {
             throw new Exception("Numele sau prenumele este introdus gresit!", e);
         }
 
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(jwtRequest.getUsernameOrEmail());
-
-        request.getSession().setAttribute("JSESSIONID", request.getSession().getId());
-        request.getSession().setAttribute("NAME", userDetails.getUsername());
+        if (userDetailsService.existsByUsername(jwtRequest.getUsernameOrEmail()))
+            request.getSession().setAttribute("JSESSIONID", request.getSession().getId());
+        else throw new UsernameNotFoundException("User not found with username: " + jwtRequest.getUsernameOrEmail());
 
         return ResponseEntity.ok(request.getSession().getId());
     }

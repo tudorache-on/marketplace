@@ -42,4 +42,8 @@ public class JwtUserDetailsService implements UserDetailsService {
     public UserDetails createUser(String name, String password) {
         return new User(name, password, new ArrayList<>());
     }
+
+    public boolean existsByUsername(String username) {
+        return userMapper.existsByUsernameOrEmail(username, username) != 0;
+    }
 }
