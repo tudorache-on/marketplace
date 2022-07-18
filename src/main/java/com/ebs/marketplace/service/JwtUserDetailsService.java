@@ -1,6 +1,5 @@
 package com.ebs.marketplace.service;
 
-import com.ebs.marketplace.jwt.JwtTokenUtil;
 import com.ebs.marketplace.mapper.UserMapper;
 import com.ebs.marketplace.model.JwtRequestLogIn;
 import com.ebs.marketplace.model.JwtRequestSignUp;

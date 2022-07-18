@@ -1,16 +1,15 @@
 package com.ebs.marketplace.controller;
 
 import com.ebs.marketplace.model.Product;
-import com.ebs.marketplace.payload.ProductDto;
+import com.ebs.marketplace.model.ProductDto;
 import com.ebs.marketplace.service.ProductService;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@SecurityRequirement(name = "Authentication")
+//@SecurityRequirement(name = "Cookie")
 @RequestMapping("/api/user")
 public class UserProductsController {
     private final ProductService productService;

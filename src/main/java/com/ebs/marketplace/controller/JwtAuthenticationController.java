@@ -1,14 +1,14 @@
 package com.ebs.marketplace.controller;
 
-import com.ebs.marketplace.jwt.SessionUtil;
+import com.ebs.marketplace.session.SessionUtil;
 import com.ebs.marketplace.model.JwtRequestLogIn;
 import com.ebs.marketplace.model.JwtRequestSignUp;
-import com.ebs.marketplace.service.UserAuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 @RestController
@@ -25,12 +25,12 @@ public class JwtAuthenticationController {
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequestLogIn jwtRequest, HttpServletRequest request) throws Exception {
-        return sessionUtil.logIn(jwtRequest, request);
+    public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequestLogIn jwtRequest, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        return sessionUtil.signIn(jwtRequest, request, response);
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> createNewUser(@Valid @RequestBody JwtRequestSignUp jwtRequest, HttpServletRequest request){
-        return sessionUtil.signUp(jwtRequest, request);
+    public ResponseEntity<?> createNewUser(@Valid @RequestBody JwtRequestSignUp jwtRequest, HttpServletRequest request, HttpServletResponse response){
+        return sessionUtil.signUp(jwtRequest, request, response);
     }
 }

@@ -6,7 +6,7 @@ import com.ebs.marketplace.mapper.UserMapper;
 import com.ebs.marketplace.model.LikesDislikes;
 import com.ebs.marketplace.model.Product;
 import com.ebs.marketplace.model.User;
-import com.ebs.marketplace.payload.ProductDto;
+import com.ebs.marketplace.model.ProductDto;
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;

@@ -1,4 +1,4 @@
-package com.ebs.marketplace.payload;
+package com.ebs.marketplace.model;
 
 import lombok.Getter;
 import lombok.Setter;
