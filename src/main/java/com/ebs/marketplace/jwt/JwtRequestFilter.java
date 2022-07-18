@@ -28,7 +28,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         this.jwtUserDetailsService = jwtUserDetailsService;
         this.sessionRepository = sessionRepository;
         this.jwtUtil = jwtUtil;
-        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
