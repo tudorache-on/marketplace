@@ -1,17 +1,15 @@
 package com.ebs.marketplace.session;
 
+import com.ebs.marketplace.jwt.JwtUtil;
 import com.ebs.marketplace.mapper.UserMapper;
 import com.ebs.marketplace.model.JwtRequestLogIn;
 import com.ebs.marketplace.model.JwtRequestSignUp;
-import com.ebs.marketplace.model.Token;
 import com.ebs.marketplace.model.User;
 import com.ebs.marketplace.service.JwtUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.HashOperations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -21,30 +19,27 @@ public class SessionUtil {
     private final SessionRepository sessionRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
+    private final JwtUserDetailsService jwtUserDetailsService;
 
     @Autowired
-    public SessionUtil(SessionRepository sessionRepository, UserMapper userMapper, PasswordEncoder passwordEncoder) {
+    public SessionUtil(SessionRepository sessionRepository, UserMapper userMapper, PasswordEncoder passwordEncoder, JwtUtil jwtUtil, JwtUserDetailsService jwtUserDetailsService) {
         this.sessionRepository = sessionRepository;
         this.userMapper = userMapper;
         this.passwordEncoder = passwordEncoder;
+        this.jwtUtil = jwtUtil;
+        this.jwtUserDetailsService = jwtUserDetailsService;
     }
 
-    public ResponseEntity<?> signIn (JwtRequestLogIn jwtRequest) throws Exception {
+    public ResponseEntity<?> signIn (JwtRequestLogIn jwtRequest){
 //        try {
 //            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken
 //                    (jwtRequest.getUsernameOrEmail(), jwtRequest.getPassword()));
 //        } catch (BadCredentialsException e) {
 //            throw new Exception("Numele sau prenumele este introdus gresit!", e);
 //        }
-        String token;
-        User user = userMapper.findByUsernameOrEmail(jwtRequest.getUsernameOrEmail(), jwtRequest.getUsernameOrEmail());
-
-        if (user == null)
-            throw new UsernameNotFoundException("User not found with username: " + jwtRequest.getUsernameOrEmail());
-        else {
-            token = passwordEncoder.encode(user.getId() + user.getUsername());
-        }
-
+        UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(jwtRequest.getUsernameOrEmail());
+        String token = jwtUtil.generateToken(userDetails);
         sessionRepository.insert("TOKEN", token);
 
         return ResponseEntity.ok(token);
@@ -63,8 +58,8 @@ public class SessionUtil {
         User user = new User(jwtRequest.getUsername(), jwtRequest.getEmail(), passwordEncoder.encode(jwtRequest.getPassword()));
         userMapper.insert(user);
 
-        String token = passwordEncoder.encode(user.getId() + user.getUsername());
-
+        UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(jwtRequest.getUsername());
+        String token = jwtUtil.generateToken(userDetails);
         sessionRepository.insert("TOKEN", token);
 
         return ResponseEntity.ok(token);

@@ -21,7 +21,7 @@ public class SessionRepository {
         template.opsForValue().set(name, token);
     }
 
-    public boolean existsByToken(String name, String token) {
+    public boolean existsByKey(String name, String token) {
         String value = template.opsForValue().get(name + token);
         return value != null;
     }
