@@ -7,8 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 @RestController
@@ -25,12 +23,12 @@ public class JwtAuthenticationController {
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequestLogIn jwtRequest, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequestLogIn jwtRequest){
         return sessionUtil.signIn(jwtRequest);
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> createNewUser(@Valid @RequestBody JwtRequestSignUp jwtRequest, HttpServletRequest request, HttpServletResponse response){
+    public ResponseEntity<?> createNewUser(@Valid @RequestBody JwtRequestSignUp jwtRequest){
         return sessionUtil.signUp(jwtRequest);
     }
 }

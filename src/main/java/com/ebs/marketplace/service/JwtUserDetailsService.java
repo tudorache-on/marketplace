@@ -21,16 +21,11 @@ public class JwtUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        if (userMapper.existsByUsernameOrEmail(username, username) != 0) {
-            String name = userMapper.findByUsernameOrEmail(username, username).getUsername();
-            String password = userMapper.findByUsernameOrEmail(username, username).getPassword();
-            return new User(name, password, new ArrayList<>());
-        } else {
+        if (userMapper.existsByUsernameOrEmail(username, username) == 0)
             throw new UsernameNotFoundException("User not found with username: " + username);
-        }
-    }
 
-    public UserDetails createUser(String name, String password) {
+        String name = userMapper.findByUsernameOrEmail(username, username).getUsername();
+        String password = userMapper.findByUsernameOrEmail(username, username).getPassword();
         return new User(name, password, new ArrayList<>());
     }
 }

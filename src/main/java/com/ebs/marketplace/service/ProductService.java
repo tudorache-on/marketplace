@@ -69,7 +69,6 @@ public class ProductService {
             product.setTitle(productDetails.getTitle());
             product.setDescription(productDetails.getDescription());
             product.setPrice(productDetails.getPrice());
-
         }
         productMapper.update(product);
         return product;
@@ -91,24 +90,31 @@ public class ProductService {
         String currentUsername = authentication.getName();
         User user = userMapper.findByUsername(currentUsername);
 
-        if (!currentUsername.equals(product.getUserUsername())) {
-            if (likeDislike.equals("none")) likesDislikesMapper.deleteByUserIdAndProductId(user.getId(), id);
+        if (currentUsername.equals(product.getUserUsername())) return;
 
-            else {
-                LikesDislikes productLikeDislike = likesDislikesMapper.findByUserIdAndProductId(user.getId(), id);
+        LikesDislikes productLikeDislike = likesDislikesMapper.findByUserIdAndProductId(user.getId(), id);
 
-                if (productLikeDislike == null)
-                    likesDislikesMapper.insert(new LikesDislikes(user.getId(), id, likeDislike));
-                else {
-                    productLikeDislike.setLikeDislike(likeDislike);
-                    likesDislikesMapper.update(productLikeDislike);
-                }
-            }
+        if (likeDislike.equals("none")) likesDislikesMapper.deleteByUserIdAndProductId(user.getId(), id);
 
+        if (!likeDislike.equals("like") && !likeDislike.equals("dislike")) {
             product.setLikesCounter(likesDislikesMapper.countByProductIdAndLikesDislikes(id, "like"));
             product.setDislikesCounter(likesDislikesMapper.countByProductIdAndLikesDislikes(id, "dislike"));
             productMapper.update(product);
+            return;
         }
+
+        if (productLikeDislike == null)
+            likesDislikesMapper.insert(new LikesDislikes(user.getId(), id, likeDislike));
+        else {
+            productLikeDislike.setLikeDislike(likeDislike);
+            likesDislikesMapper.update(productLikeDislike);
+        }
+
+
+        product.setLikesCounter(likesDislikesMapper.countByProductIdAndLikesDislikes(id, "like"));
+        product.setDislikesCounter(likesDislikesMapper.countByProductIdAndLikesDislikes(id, "dislike"));
+        productMapper.update(product);
+
     }
 
 }
