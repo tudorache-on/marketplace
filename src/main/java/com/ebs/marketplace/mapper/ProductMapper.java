@@ -20,4 +20,6 @@ public interface ProductMapper {
     void deleteById(@Param("id") long id);
 
     List<Product> findAll(RowBounds rowBounds);
+
+    int existsById(@Param("id") long id);
 }

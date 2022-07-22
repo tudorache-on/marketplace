@@ -37,4 +37,8 @@
         DELETE FROM products WHERE id = #{id};
     </delete>
 
+    <select id="existsById" resultType="int">
+        SELECT COUNT (id) FROM products WHERE id = #{id}
+    </select>
+
 </mapper>
