@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ebs.marketplace.mapper.CheckedFilesMapper">
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        INSERT INTO checked_files(file_name) VALUES (#{fileName});
+    </insert>
+
+    <select id="existsByName" resultType="int">
+        SELECT COUNT (id) FROM checked_files WHERE file_name = #{file_name};
+    </select>
+
+</mapper>

@@ -1,10 +1,11 @@
 package com.ebs.marketplace.csv;
 
+import com.ebs.marketplace.mapper.CheckedFilesMapper;
 import com.ebs.marketplace.mapper.ProductMapper;
+import com.ebs.marketplace.model.CheckedFiles;
 import com.ebs.marketplace.model.Product;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
-import org.apache.commons.io.FilenameUtils;
 import org.postgresql.copy.CopyIn;
 import org.postgresql.copy.CopyManager;
 import org.postgresql.copy.PGCopyOutputStream;
@@ -28,36 +29,39 @@ import java.util.stream.Stream;
 public class CsvManager {
 
     private final ProductMapper productMapper;
+    private final CheckedFilesMapper checkedFilesMapper;
     @Value("${file.path}")
     private String filePath;
+    @Value("${table.name}")
+    private String tableName;
 
     @Autowired
-    public CsvManager(ProductMapper productMapper) {
+    public CsvManager(ProductMapper productMapper, CheckedFilesMapper checkedFilesMapper) {
         this.productMapper = productMapper;
+        this.checkedFilesMapper = checkedFilesMapper;
     }
 
     @Scheduled(cron = "${schedule.timeout}")
-    public void csvToSql() {
-        try {
-            Connection connection = createConnection();
+    public void csvToSql() throws IOException {
             try (Stream<Path> paths = Files.walk(Paths.get(filePath))) {
                 paths
                         .filter(Files::isRegularFile)
                         .forEach(pathName -> {
                             try {
-                                String fileName = FilenameUtils.removeExtension(pathName.getFileName().toString());
-                                Writer writer = defineWriter(connection, fileName);
+                                Connection connection = createConnection();
+                                Writer writer = defineWriter(connection);
+                                if (!pathName.getFileName().toString().startsWith("start")
+                                        || checkedFilesMapper.existsByName(pathName.getFileName().toString()) > 0) return;
+                                CheckedFiles checkedFiles = new CheckedFiles(pathName.getFileName().toString());
                                 CsvToBean<Product> bean = new CsvToBeanBuilder<Product>
-                                        (new FileReader(String.valueOf(pathName))).withType(Product.class).build();
+                                        (new FileReader(pathName.toString())).withType(Product.class).build();
                                 writeDataToSql(writer, bean, connection);
-                            } catch (IOException | SQLException e) {
+                                checkedFilesMapper.insert(checkedFiles);
+                            } catch (Exception e) {
                                 throw new RuntimeException(e);
                             }
                         });
             }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 
     private Connection createConnection() throws ClassNotFoundException, SQLException {
@@ -67,7 +71,7 @@ public class CsvManager {
         return connection;
     }
 
-    private Writer defineWriter(Connection connection, String tableName) throws SQLException {
+    private Writer defineWriter(Connection connection) throws SQLException {
         CopyManager copyManager = new CopyManager((BaseConnection) connection);
         CopyIn copyIn = copyManager.copyIn("COPY " + tableName + " FROM STDIN WITH CSV");
         return new OutputStreamWriter(new PGCopyOutputStream(copyIn), StandardCharsets.UTF_8);
