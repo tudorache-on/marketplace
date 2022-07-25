@@ -52,11 +52,10 @@ public class CsvManager {
                                 Writer writer = defineWriter(connection);
                                 if (!pathName.getFileName().toString().startsWith("start")
                                         || checkedFilesMapper.existsByName(pathName.getFileName().toString()) > 0) return;
-                                CheckedFiles checkedFiles = new CheckedFiles(pathName.getFileName().toString());
                                 CsvToBean<Product> bean = new CsvToBeanBuilder<Product>
                                         (new FileReader(pathName.toString())).withType(Product.class).build();
                                 writeDataToSql(writer, bean, connection);
-                                checkedFilesMapper.insert(checkedFiles);
+                                checkedFilesMapper.insert(new CheckedFiles(pathName.getFileName().toString()));
                             } catch (Exception e) {
                                 throw new RuntimeException(e);
                             }

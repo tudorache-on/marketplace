@@ -29,4 +29,8 @@
         SELECT * FROM likes_dislikes WHERE user_id = #{user_id} AND product_id = #{product_id}
     </select>
 
+    <select id="findLikesByProductId" resultType="java.lang.Long">
+        SELECT user_id FROM likes_dislikes WHERE product_id = #{product_id} AND like_dislike = 'like';
+    </select>
+
 </mapper>

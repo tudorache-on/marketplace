@@ -1,5 +1,6 @@
 package com.ebs.marketplace.controller;
 
+import com.ebs.marketplace.model.Notification;
 import com.ebs.marketplace.model.Product;
 import com.ebs.marketplace.model.ProductDto;
 import com.ebs.marketplace.service.ProductService;
@@ -12,11 +13,11 @@ import java.util.List;
 @RestController
 @SecurityRequirement(name = "Authentication")
 @RequestMapping("/api/user")
-public class UserProductsController {
+public class UserController {
     private final ProductService productService;
 
     @Autowired
-    public UserProductsController(ProductService productService) {
+    public UserController(ProductService productService) {
         this.productService = productService;
     }
 
@@ -31,12 +32,27 @@ public class UserProductsController {
     }
 
     @PutMapping("/products/{product_id}")
-    public Product readProducts(@PathVariable(value = "product_id") Long id, @RequestBody ProductDto productDetails) {
+    public Product updateProduct(@PathVariable(value = "product_id") Long id, @RequestBody ProductDto productDetails) {
         return productService.updateProduct(id, productDetails);
     }
 
     @DeleteMapping("/products/{product_id}")
     public void deleteProducts(@PathVariable(value = "product_id") Long id) {
         productService.deleteProduct(id);
+    }
+
+    @GetMapping("/notifications")
+    public List<Notification> readNotifications() {
+        return productService.getNotifications();
+    }
+
+    @PutMapping("/notifications/{notification_id}")
+    public void updateNotification(@PathVariable(value = "notification_id") long id) {
+        productService.updateNotification(id);
+    }
+
+    @DeleteMapping("/notifications/{notification_id}")
+    public void deleteNotification (@PathVariable(value = "notification_id") long id) {
+        productService.deleteNotification(id);
     }
 }

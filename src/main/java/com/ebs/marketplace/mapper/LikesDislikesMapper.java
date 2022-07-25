@@ -4,6 +4,8 @@ import com.ebs.marketplace.model.LikesDislikes;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 @Mapper
 public interface LikesDislikesMapper {
 
@@ -16,4 +18,6 @@ public interface LikesDislikesMapper {
     long countByProductIdAndLikesDislikes(@Param("product_id") long productId, @Param("like_dislike") String likeDislike);
 
     LikesDislikes findByUserIdAndProductId(@Param("user_id") long userId, @Param("product_id") long productId);
+
+    List<Long> findLikesByProductId(@Param("product_id") long productId);
 }

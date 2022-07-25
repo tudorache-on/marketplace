@@ -1,12 +1,10 @@
 package com.ebs.marketplace.service;
 
 import com.ebs.marketplace.mapper.LikesDislikesMapper;
+import com.ebs.marketplace.mapper.NotificationMapper;
 import com.ebs.marketplace.mapper.ProductMapper;
 import com.ebs.marketplace.mapper.UserMapper;
-import com.ebs.marketplace.model.LikesDislikes;
-import com.ebs.marketplace.model.Product;
-import com.ebs.marketplace.model.User;
-import com.ebs.marketplace.model.ProductDto;
+import com.ebs.marketplace.model.*;
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -21,12 +19,36 @@ public class ProductService {
     private final UserMapper userMapper;
     private final ProductMapper productMapper;
     private final LikesDislikesMapper likesDislikesMapper;
+    private final NotificationMapper notificationMapper;
 
     @Autowired
-    public ProductService(UserMapper userMapper, ProductMapper productMapper, LikesDislikesMapper likesDislikesMapper) {
+    public ProductService(UserMapper userMapper, ProductMapper productMapper, LikesDislikesMapper likesDislikesMapper, NotificationMapper notificationMapper) {
         this.userMapper = userMapper;
         this.productMapper = productMapper;
         this.likesDislikesMapper = likesDislikesMapper;
+        this.notificationMapper = notificationMapper;
+    }
+
+    public List<Notification> getNotifications() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        long userId = userMapper.findByUsername(authentication.getName()).getId();
+        return notificationMapper.findByUserId(userId);
+    }
+
+    public void updateNotification(long id) {
+        Notification notification = notificationMapper.findById(id);
+        if (notification == null) throw new IllegalArgumentException("Object does not exist!");
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        long userId = userMapper.findByUsername(authentication.getName()).getId();
+        if (userId == notification.getUserId()) notificationMapper.seen(id);
+    }
+
+    public void deleteNotification(long id) {
+        Notification notification = notificationMapper.findById(id);
+        if (notification == null) throw new IllegalArgumentException("Object does not exist!");
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        long userId = userMapper.findByUsername(authentication.getName()).getId();
+        if (userId == notification.getUserId()) notificationMapper.deleteById(id);;
     }
 
     public Product createProduct(ProductDto productData) {
@@ -65,11 +87,19 @@ public class ProductService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUsername = authentication.getName();
 
+        if (product.getPrice() != productDetails.getPrice()) {
+            String message = productDetails.getTitle() + ": Pretul s-a modificat de la "
+                    + product.getPrice() + " lei la " + productDetails.getPrice() + " lei";
+            likesDislikesMapper.findLikesByProductId(prod_id)
+                    .forEach(userId -> notificationMapper.insert(new Notification(message, false, userId)));
+        }
+
         if (product.getUserUsername().equals(currentUsername)) {
             product.setTitle(productDetails.getTitle());
             product.setDescription(productDetails.getDescription());
             product.setPrice(productDetails.getPrice());
         }
+
         productMapper.update(product);
         return product;
     }
