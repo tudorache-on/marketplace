@@ -6,11 +6,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Product {
+public class Product implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     @CsvBindByName(column = "Id")
     private long id;
     @CsvBindByName(column = "Title")
@@ -28,6 +34,13 @@ public class Product {
 
     public String toCsv() {
         return id + "," + title + "," + description + "," + price + "," + userUsername + "," + likesCounter + "," + dislikesCounter + "\n";
+    }
+
+    public Product(String title, String description, double price, String userUsername) {
+        this.title = title;
+        this.description = description;
+        this.price = price;
+        this.userUsername = userUsername;
     }
 }
 

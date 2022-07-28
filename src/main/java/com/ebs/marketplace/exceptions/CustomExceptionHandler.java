@@ -1,6 +1,9 @@
 package com.ebs.marketplace.exceptions;
 
+import io.lettuce.core.RedisCommandTimeoutException;
+import io.lettuce.core.RedisConnectionException;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -10,6 +13,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
+import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -52,5 +56,21 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         details.add(ex.getMostSpecificCause().getMessage());
         ErrorResponse error = new ErrorResponse("Valorile introduse nu corespund cerintelor!", details);
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(RedisCommandTimeoutException.class)
+    public final ResponseEntity<Object> handleRedisCommandTimeoutException(Exception ex) {
+        List<String> details = new ArrayList<>();
+        details.add(ex.getMessage());
+        ErrorResponse error = new ErrorResponse("Error establishing a database connection!", details);
+        return new ResponseEntity<>(error, HttpStatus.BAD_GATEWAY);
+    }
+
+    @ExceptionHandler(RedisConnectionFailureException.class)
+    public final ResponseEntity<Object> handleRedisConnectionFailureException(Exception ex) {
+        List<String> details = new ArrayList<>();
+        details.add(ex.getMessage());
+        ErrorResponse error = new ErrorResponse("Error establishing a database connection!", details);
+        return new ResponseEntity<>(error, HttpStatus.BAD_GATEWAY);
     }
 }

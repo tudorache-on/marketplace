@@ -27,6 +27,10 @@ public class SessionUtil {
     }
 
     public ResponseEntity<?> signIn(JwtRequestLogIn jwtRequest) {
+        if (jwtRequest.getUsernameOrEmail() == null || jwtRequest.getPassword() == null ||
+                jwtRequest.getUsernameOrEmail().isBlank() || jwtRequest.getPassword().isBlank())
+            return new ResponseEntity<>("Datele nu au fost introduse!", HttpStatus.BAD_REQUEST);
+
         User user = userMapper.findByUsernameOrEmail(jwtRequest.getUsernameOrEmail(), jwtRequest.getUsernameOrEmail());
 
         String token = tokenGenerator(user);

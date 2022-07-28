@@ -12,10 +12,4 @@ public class Notification {
     private String message;
     private boolean read;
     private long userId;
-
-    public Notification(String message, boolean read, long userId) {
-        this.message = message;
-        this.read = read;
-        this.userId = userId;
-    }
 }

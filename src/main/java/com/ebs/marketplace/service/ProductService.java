@@ -48,7 +48,7 @@ public class ProductService {
         if (notification == null) throw new IllegalArgumentException("Object does not exist!");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         long userId = userMapper.findByUsername(authentication.getName()).getId();
-        if (userId == notification.getUserId()) notificationMapper.deleteById(id);;
+        if (userId == notification.getUserId()) notificationMapper.deleteById(id);
     }
 
     public Product createProduct(ProductDto productData) {
@@ -86,13 +86,6 @@ public class ProductService {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUsername = authentication.getName();
-
-        if (product.getPrice() != productDetails.getPrice()) {
-            String message = productDetails.getTitle() + ": Pretul s-a modificat de la "
-                    + product.getPrice() + " lei la " + productDetails.getPrice() + " lei";
-            likesDislikesMapper.findLikesByProductId(prod_id)
-                    .forEach(userId -> notificationMapper.insert(new Notification(message, false, userId)));
-        }
 
         if (product.getUserUsername().equals(currentUsername)) {
             product.setTitle(productDetails.getTitle());

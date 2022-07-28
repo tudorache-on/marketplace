@@ -46,7 +46,7 @@ public class UserController {
         return productService.getNotifications();
     }
 
-    @PutMapping("/notifications/{notification_id}")
+    @PatchMapping("/notifications/{notification_id}")
     public void updateNotification(@PathVariable(value = "notification_id") long id) {
         productService.updateNotification(id);
     }
