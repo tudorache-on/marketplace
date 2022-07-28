@@ -1,4 +1,4 @@
-package com.ebs.marketplace;
+package com.ebs.marketplace.integration;
 
 import com.ebs.marketplace.controller.ProductsController;
 import com.ebs.marketplace.jwt.JwtAuthenticationEntryPoint;
