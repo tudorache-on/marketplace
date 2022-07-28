@@ -12,7 +12,7 @@ import java.util.List;
 
 @RestController
 @SecurityRequirement(name = "Authentication")
-@RequestMapping("/api/user")
+@RequestMapping("/api/users")
 public class UserController {
     private final ProductService productService;
 
