@@ -81,3 +81,8 @@ Sesiunile de logare a utilizatorilor sunt tratate cu ajutorul bazei de date REDI
 token.timeout=5
 ```
 Exemplul mai sus setează durata unei sesiuni în REDIS pe 5 minute.
+
+## SWAGGER
+``
+http://localhost:8080/swagger-ui.html
+``
