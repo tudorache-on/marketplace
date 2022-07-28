@@ -9,7 +9,7 @@ Marketplace API este un api destinat lucrului cu aplicațiile web ce implementea
 - Notificarea utilizatorilor la schimbarea pretului produselor 
 
 ## Înscrierea și logarea utilizatorilor
----
+
 #### Înscrierea utilizatorilor
 ``
 POST /api/auth/signup
@@ -20,7 +20,7 @@ POST /api/auth/signin
 ``
 
 ## CRUD operații cu produsele utilizatorilor
----
+
 #### Crearea produselor
 ``
 POST /api/user/products
@@ -39,21 +39,21 @@ DELETE /api/user/products/{product_id}
 ``
 
 ## Paginarea produselor
----
+
 #### Afișarea produselor paginate
 ``
 GET /api/products
 ``
 
 ## Like/dislike produse
----
+
 #### Like/dislike al unui produs
 ``
 PATCH /api/products/{product_id}/{like}
 ``
 
 ## Notificarea utilizatorilor la schimbarea pretului produselor
----
+
 #### Afișarea notificărilor
 ``
 GET /api/user/notifications
