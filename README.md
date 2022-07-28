@@ -23,19 +23,19 @@ POST /api/auth/signin
 
 #### Crearea produselor
 ``
-POST /api/user/products
+POST /api/users/products
 ``
 #### Afișarea produselor
 ``
-GET /api/user/products
+GET /api/users/products
 ``
 #### Actualizarea produselor
 ``
-PUT /api/user/products/{product_id}
+PUT /api/users/products/{product_id}
 ``
 #### Ștergerea produselor
 ``
-DELETE /api/user/products/{product_id}
+DELETE /api/users/products/{product_id}
 ``
 
 ## Paginarea produselor
@@ -56,15 +56,15 @@ PATCH /api/products/{product_id}/{like}
 
 #### Afișarea notificărilor
 ``
-GET /api/user/notifications
+GET /api/users/notifications
 ``
 #### Marcarea notificărilor ca fiind citite
 ``
-PATCH /api/user/notifications/{notification_id}
+PATCH /api/users/notifications/{notification_id}
 ``
 #### Ștergerea notificărilor
 ``
-DELETE /api/user/notifications/{notification_id}
+DELETE /api/users/notifications/{notification_id}
 ``
 
 ## Dependențe
