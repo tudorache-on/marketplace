@@ -1,0 +1,31 @@
+version: '3'
+services:
+  API:
+    image: 'java-docker'
+    container_name: marketplace
+    build:
+      context: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - PostgresSQL
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://PostgresSQL:5432/marketplace2
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=olanesti905
+
+
+  PostgresSQL:
+    image: postgres
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=olanesti905
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=marketplace2
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5

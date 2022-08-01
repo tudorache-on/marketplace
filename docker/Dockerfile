@@ -1,15 +1,15 @@
-# syntax=docker/dockerfile:1
-
 FROM openjdk:17-ea-jdk-alpine3.13
 
 WORKDIR /app
 
-COPY .mvn/ .mvn
-COPY mvnw pom.xml ./
+RUN mvn -f /usr/src/app/pom.xml clean package -DskipTests
+
+COPY ../.mvn .mvn
+COPY ../mvnw pom.xml ./
 
 RUN ./mvnw dependency:go-offline
 
-COPY src ./src
+COPY ../src ./src
 
 CMD ["./mvnw", "spring-boot:run"]
 
